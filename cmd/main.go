@@ -10,13 +10,14 @@ import (
 
 var usage = `Usage: lezgo command [options]
 
-A simple build and dependency management tool for Go, offering multiple build profiles and enhanced workflows for developers
+A simple build management tool for Go, offering multiple build profiles and enhanced workflows for developers.
 
 Options:
 
 Commands:
 
 Init
+Check
 
 `
 
@@ -35,7 +36,8 @@ func main() {
 	switch os.Args[1] {
 	case "init":
 		cmd = src.NewInitCommand()
-
+	case "check":
+		cmd = src.NewCheckCommand()
 	default:
 		usageAndExit(fmt.Sprintf("lezgo: '%s' is not a lezgo command.\n", os.Args[1]))
 	}
