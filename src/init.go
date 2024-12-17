@@ -45,7 +45,7 @@ var initFunc = func(cmd *Command, args []string) {
 func createConfigFile(name string) error {
 	// If the file doesn't exist, create it, or append to the file
 	template := templates.RenderLezgoConfigTemplate(name)
-	f, err := os.OpenFile("lezgo.yaml", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile("lezgo.yaml", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
