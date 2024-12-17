@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/ElouanDaCosta/LezGo/pkg"
 	"github.com/ElouanDaCosta/LezGo/src/templates"
@@ -23,19 +22,24 @@ Options:
 	-n, --name     give the name of the application
 `
 
+/*
+Initialize LezGo to the current project,
+create the config file with default configuration
+*/
 var initFunc = func(cmd *Command, args []string) {
-	c := make(chan bool)
-	go pkg.Throbber(pkg.Spin, 50*time.Millisecond, c)
+	// ascii art
+	pkg.LezgoAsciiArt()
+	fmt.Println("Creating the config file...")
 
+	// create config file
 	errCreateConfig := createConfigFile(projectName)
 	if errCreateConfig != nil {
-		c <- true
 		panic(errCreateConfig)
 	}
-	c <- true
 	if forceFlag {
 		fmt.Printf("%+v\n", "force")
 	}
+	fmt.Println("LezGo initialize successfully!")
 }
 
 func createConfigFile(name string) error {

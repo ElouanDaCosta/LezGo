@@ -31,6 +31,9 @@ targets:
   - os: windows
     arch: amd64
     output: ./bin/windows_amd64.exe
+	- os: arm64
+    arch: arm64
+    output: ./bin/arm64/
 
 # custom scripts
 scripts:
