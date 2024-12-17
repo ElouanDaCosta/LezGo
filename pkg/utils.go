@@ -3,6 +3,8 @@ package pkg
 import "fmt"
 
 func LezgoAsciiArt() {
+	var Reset = "\033[0m"
+	var Cyan = "\033[36m"
 	const asciiArt = `
    __           _____   
   / /  ___ ___ / ___/__ 
@@ -10,5 +12,5 @@ func LezgoAsciiArt() {
 /____/\__//__/\___/\___/
 
 	`
-	fmt.Printf("%+v\n", asciiArt)
+	fmt.Println(Cyan + asciiArt + Reset)
 }
