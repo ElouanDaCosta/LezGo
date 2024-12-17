@@ -4,6 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
+
+	"github.com/ElouanDaCosta/LezGo/pkg"
 )
 
 var forceFlag bool = false
@@ -17,7 +20,11 @@ Options:
 `
 
 var initFunc = func(cmd *Command, args []string) {
-	fmt.Printf("%+v\n", "here")
+	c := make(chan bool)
+
+	go pkg.Throbber(pkg.Spin, 50*time.Millisecond, c)
+	time.Sleep(1 * time.Second)
+	c <- true
 	if forceFlag {
 		fmt.Printf("%+v\n", "force")
 	}
