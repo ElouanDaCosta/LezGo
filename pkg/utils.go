@@ -1,6 +1,10 @@
 package pkg
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"os"
+)
 
 func LezgoAsciiArt() {
 	var Reset = "\033[0m"
@@ -13,4 +17,11 @@ func LezgoAsciiArt() {
 
 	`
 	fmt.Println(Cyan + asciiArt + Reset)
+}
+
+func IsFileExist(path string) error {
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	return nil
 }

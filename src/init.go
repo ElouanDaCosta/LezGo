@@ -18,7 +18,6 @@ var initUsage = `Initialize LezGo in the current directory.
 Usage: lezgo init [OPTIONS]
 
 Options:
-	-f, --force    skip the confirmation prompt
 	-n, --name     give the name of the application
 `
 
