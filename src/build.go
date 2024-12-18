@@ -49,19 +49,13 @@ var buildFunc = func(cmd *Command, args []string) {
 	case "release":
 		binaryNameOutput = profile.Profiles.Release.Output + profile.Name
 		buildArgs = profile.Profiles.Release.Flags
-		buildArgs = append([]string{"build"}, buildArgs...)
-		buildArgs = append(buildArgs, "-o")
-		buildArgs = append(buildArgs, binaryNameOutput)
-		buildArgs = append(buildArgs, profile.Entrypoint)
+		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
 		mkdirPath = profile.Profiles.Release.Output
 		break
 	case "debug":
 		binaryNameOutput = profile.Profiles.Debug.Output + profile.Name
 		buildArgs = profile.Profiles.Debug.Flags
-		buildArgs = append([]string{"build"}, buildArgs...)
-		buildArgs = append(buildArgs, "-o")
-		buildArgs = append(buildArgs, binaryNameOutput)
-		buildArgs = append(buildArgs, profile.Entrypoint)
+		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
 		mkdirPath = profile.Profiles.Debug.Output
 		break
 	}
@@ -79,12 +73,21 @@ var buildFunc = func(cmd *Command, args []string) {
 			pkg.CustomError(err.Error())
 		}
 	}
+	fmt.Println(buildArgs)
 	goBuild := exec.Command("go", buildArgs...)
 	_, err = goBuild.Output()
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Build process complete successfully")
+}
+
+func buildArgsArray(array []string, binaryName string, output string) []string {
+	array = append([]string{"build"}, array...)
+	array = append(array, "-o")
+	array = append(array, binaryName)
+	array = append(array, output)
+	return array
 }
 
 func NewBuildCommand() *Command {
