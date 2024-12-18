@@ -3,6 +3,7 @@ package pkg
 type Config struct {
 	Name       string `yaml:"name"`
 	Entrypoint string `yaml:"entrypoint"`
+	Version    int    `yaml:"version"`
 	Profiles   struct {
 		Debug struct {
 			Flags []string `yaml:"flags"`

@@ -13,7 +13,7 @@ import (
 
 var profileName string
 
-var buildUsage = `Build LezGo given profile.
+var buildUsage = `Build LezGo with given profile.
 
 Usage: lezgo build [OPTIONS]
 
