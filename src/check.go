@@ -1,10 +1,12 @@
 package src
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"os"
+	"unicode"
 
 	"github.com/ElouanDaCosta/LezGo/pkg"
 	"gopkg.in/yaml.v3"
@@ -32,9 +34,25 @@ var checkFunc = func(cmd *Command, args []string) {
 		panic(err)
 	}
 
-	fmt.Print(profile.Project)
+	checkConfigName(profile)
+
+	fmt.Println("Config file check complete")
 
 	return
+}
+
+func checkConfigName(yamlStruct pkg.Config) error {
+	if yamlStruct.Name == "" {
+		return errors.New("name field shouldn't be nil")
+	} else {
+		for _, r := range yamlStruct.Name {
+			if unicode.IsUpper(r) {
+				pkg.Warning("Name should be in lowercase only")
+				break
+			}
+		}
+	}
+	return nil
 }
 
 func NewCheckCommand() *Command {

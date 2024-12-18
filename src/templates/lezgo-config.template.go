@@ -3,7 +3,7 @@ package templates
 import "fmt"
 
 func RenderLezgoConfigTemplate(name string) string {
-	const configTemplate = `project: %v
+	const configTemplate = `name: %v
 
 # define build profile
 profiles:
@@ -21,7 +21,6 @@ profiles:
       GO_ENV: production
     output: ./bin/release/
     tags: ["release"]
-    ldflags: "-X main.version=1.0.0"
-	`
+    ldflags: "-X main.version=1.0.0"`
 	return fmt.Sprintf(configTemplate, name)
 }

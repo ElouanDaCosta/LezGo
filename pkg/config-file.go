@@ -1,7 +1,7 @@
 package pkg
 
 type Config struct {
-	Project  string `yaml:"project"`
+	Name     string `yaml:"name"`
 	Profiles struct {
 		Debug struct {
 			Flags []string `yaml:"flags"`
