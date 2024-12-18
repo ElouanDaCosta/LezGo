@@ -17,8 +17,8 @@ Options:
 Commands:
 
 Init
-Check
 
+Build
 `
 
 func main() {
@@ -36,8 +36,8 @@ func main() {
 	switch os.Args[1] {
 	case "init":
 		cmd = src.NewInitCommand()
-	case "check":
-		cmd = src.NewCheckCommand()
+	case "build":
+		cmd = src.NewBuildCommand()
 	default:
 		usageAndExit(fmt.Sprintf("lezgo: '%s' is not a lezgo command.\n", os.Args[1]))
 	}
