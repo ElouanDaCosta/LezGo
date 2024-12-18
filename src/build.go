@@ -46,12 +46,20 @@ var buildFunc = func(cmd *Command, args []string) {
 	switch profileName {
 	case "release":
 		buildArgs = profile.Profiles.Release.Flags
-		buildArgs = append([]string{profile.Profiles.Release.Output}, buildArgs...)
+		buildArgs = append([]string{"build"}, buildArgs...)
+		buildArgs = append(buildArgs, "-o")
+		buildArgs = append(buildArgs, profile.Profiles.Release.Output)
+		buildArgs = append(buildArgs, profile.Entrypoint)
 		mkdirPath = profile.Profiles.Release.Output
 		break
 	case "debug":
 		buildArgs = profile.Profiles.Debug.Flags
+		buildArgs = append([]string{"build"}, buildArgs...)
+		buildArgs = append(buildArgs, "-o")
+		buildArgs = append(buildArgs, profile.Profiles.Debug.Output)
+		buildArgs = append(buildArgs, profile.Entrypoint)
 		mkdirPath = profile.Profiles.Debug.Output
+		break
 	}
 	fmt.Println("Starting the build process...")
 	err = pkg.IsFileExist(profile.Entrypoint)
@@ -59,15 +67,20 @@ var buildFunc = func(cmd *Command, args []string) {
 		pkg.CustomError("Entrypoint not found")
 	}
 
-	mkdirOutput := exec.Command("mkdir", mkdirPath)
+	if err := pkg.IsFileExist(mkdirPath); err != nil {
+		mkdirOutput := exec.Command("mkdir", mkdirPath)
 
-	_, err = mkdirOutput.Output()
-	if err != nil {
-		pkg.CustomError(err.Error())
+		_, err = mkdirOutput.Output()
+		if err != nil {
+			pkg.CustomError(err.Error())
+		}
 	}
-
-	goBuild := exec.Command("go build -o", buildArgs...)
+	fmt.Println(buildArgs)
+	goBuild := exec.Command("go", buildArgs...)
 	_, err = goBuild.Output()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func NewBuildCommand() *Command {
