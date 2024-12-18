@@ -4,6 +4,7 @@ import "fmt"
 
 func RenderLezgoConfigTemplate(name string) string {
 	const configTemplate = `name: %v
+entrypoint: main.go
 
 # define build profile
 profiles:

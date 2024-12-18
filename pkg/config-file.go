@@ -1,8 +1,9 @@
 package pkg
 
 type Config struct {
-	Name     string `yaml:"name"`
-	Profiles struct {
+	Name       string `yaml:"name"`
+	Entrypoint string `yaml:"entrypoint"`
+	Profiles   struct {
 		Debug struct {
 			Flags []string `yaml:"flags"`
 			Env   struct {

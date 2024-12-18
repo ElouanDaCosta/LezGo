@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 
 	"github.com/ElouanDaCosta/LezGo/pkg"
 	"gopkg.in/yaml.v3"
@@ -21,7 +22,9 @@ Options:
 `
 
 var buildFunc = func(cmd *Command, args []string) {
-	fmt.Println("Starting the build process...")
+	if profileName == "" {
+		pkg.CustomError("Please refer the name of the profile you want to build")
+	}
 	f, err := os.ReadFile("lezgo.yaml")
 	if err != nil {
 		log.Fatal(err)
@@ -34,13 +37,37 @@ var buildFunc = func(cmd *Command, args []string) {
 		panic(err)
 	}
 
-	// var config map[string]interface{}
-	// if err := yaml.Unmarshal(f, &config); err != nil {
-	// 	fmt.Println("YAML syntax error:", err)
-	// } else {
-	// 	fmt.Println("YAML is well-formed!")
-	// }
-	fmt.Println(profile.Profiles.Release)
+	if profileName != "release" && profileName != "debug" {
+		pkg.CustomError("Please refer the name of an existing profile")
+	}
+
+	var buildArgs []string
+	var mkdirPath string
+	switch profileName {
+	case "release":
+		buildArgs = profile.Profiles.Release.Flags
+		buildArgs = append([]string{profile.Profiles.Release.Output}, buildArgs...)
+		mkdirPath = profile.Profiles.Release.Output
+		break
+	case "debug":
+		buildArgs = profile.Profiles.Debug.Flags
+		mkdirPath = profile.Profiles.Debug.Output
+	}
+	fmt.Println("Starting the build process...")
+	err = pkg.IsFileExist(profile.Entrypoint)
+	if err != nil {
+		pkg.CustomError("Entrypoint not found")
+	}
+
+	mkdirOutput := exec.Command("mkdir", mkdirPath)
+
+	_, err = mkdirOutput.Output()
+	if err != nil {
+		pkg.CustomError(err.Error())
+	}
+
+	goBuild := exec.Command("go build -o", buildArgs...)
+	_, err = goBuild.Output()
 }
 
 func NewBuildCommand() *Command {
