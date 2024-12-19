@@ -12,6 +12,7 @@ import (
 )
 
 var profileName string
+var crossCompilation bool
 
 var buildUsage = `Build LezGo with given profile.
 
@@ -19,6 +20,7 @@ Usage: lezgo build [OPTIONS]
 
 Options:
 	-p, --profile     give the name of the profile
+	-c, --cross-compilation     tell if the build should be using the cross-compilation option of the profile 
 `
 
 var buildFunc = func(cmd *Command, args []string) {
@@ -98,6 +100,8 @@ func NewBuildCommand() *Command {
 
 	cmd.flags.StringVar(&profileName, "profile", "", "Long declaration to give the name of the profile")
 	cmd.flags.StringVar(&profileName, "p", "", "Short declaration to give the name of the profile")
+	cmd.flags.BoolVar(&crossCompilation, "cross-compilation", false, "Long declaration to activate the cross-compilation option of the given profile")
+	cmd.flags.BoolVar(&crossCompilation, "c", false, "Short declaration to activate the cross-compilation option of the given profile")
 
 	cmd.flags.Usage = func() {
 		fmt.Fprintln(os.Stderr, initUsage)
