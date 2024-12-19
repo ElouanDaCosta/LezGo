@@ -16,7 +16,8 @@ build:
         GO_ENV: debug
       output: ./bin/debug/
       tags: ["debug"]
-      cross-compilation: [""]
+      os-target: darwin
+      arch: arm64
 
     release:
       flags: ["-ldflags", "-s -w"]
@@ -24,6 +25,7 @@ build:
         GO_ENV: production
       output: ./bin/release/
       tags: ["release"]
-      cross-compilation: [""]`
+      os-target: darwin
+      arch: arm64`
 	return fmt.Sprintf(configTemplate, name)
 }

@@ -43,10 +43,12 @@ var buildFunc = func(cmd *Command, args []string) {
 		pkg.CustomError("Please refer the name of an existing profile")
 	}
 
-	var buildArgs []string
-	var mkdirPath string
+	if crossCompilation {
+		crossCompilationProfileBuild(profile)
+		return
+	}
 
-	profileBuildArgs, profilePath := profileBuild(profile, buildArgs, mkdirPath)
+	profileBuildArgs, profilePath := profileBuild(profile)
 
 	fmt.Println("Starting the build process...")
 	err = pkg.IsFileExist(profile.Entrypoint)
@@ -71,6 +73,32 @@ var buildFunc = func(cmd *Command, args []string) {
 	fmt.Println("Build process complete successfully")
 }
 
+func crossCompilationProfileBuild(profile pkg.Config) {
+	var crossCompilation string
+	var binaryNameOutput string
+	var buildArgs []string
+	switch profileName {
+	case "release":
+		crossCompilation = fmt.Sprintf(`GOOS=%v GOARCH=%v`, profile.Build.Profiles.Release.OsTarget, profile.Build.Profiles.Release.Arch)
+		binaryNameOutput = fmt.Sprintf(`%v_%v`, profile.Name, profile.Build.Profiles.Release.Arch)
+		buildArgs = append(buildArgs, profile.Build.Profiles.Release.Output+binaryNameOutput)
+		buildArgs = append(buildArgs, profile.Entrypoint)
+	case "debug":
+		crossCompilation = fmt.Sprintf(`GOOS=%v GOARCH=%v`, profile.Build.Profiles.Debug.OsTarget, profile.Build.Profiles.Release.Arch)
+		binaryNameOutput = fmt.Sprintf(`%v_%v`, profile.Name, profile.Build.Profiles.Debug.Arch)
+		buildArgs = append(buildArgs, profile.Build.Profiles.Debug.Output+binaryNameOutput)
+		buildArgs = append(buildArgs, profile.Entrypoint)
+	}
+	buildInput := []string{crossCompilation, "go build -o", buildArgs[0], buildArgs[1]}
+	goBuild := exec.Command("env", buildInput...)
+	fmt.Println(goBuild)
+	if err := goBuild.Run(); err != nil {
+		fmt.Println("Error running command:", err)
+		return
+	}
+	fmt.Println("Build process complete successfully")
+}
+
 func buildArgsArray(array []string, binaryName string, output string) []string {
 	array = append([]string{"build"}, array...)
 	array = append(array, "-o")
@@ -79,20 +107,21 @@ func buildArgsArray(array []string, binaryName string, output string) []string {
 	return array
 }
 
-func profileBuild(profile pkg.Config, buildArgs []string, mkdirPath string) ([]string, string) {
+func profileBuild(profile pkg.Config) ([]string, string) {
 	var binaryNameOutput string
+	var buildArgs []string
 	switch profileName {
 	case "release":
 		binaryNameOutput = profile.Build.Profiles.Release.Output + profile.Name
 		buildArgs = profile.Build.Profiles.Release.Flags
 		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
-		mkdirPath = profile.Build.Profiles.Release.Output
+		mkdirPath := profile.Build.Profiles.Release.Output
 		return buildArgs, mkdirPath
 	case "debug":
 		binaryNameOutput = profile.Build.Profiles.Debug.Output + profile.Name
 		buildArgs = profile.Build.Profiles.Debug.Flags
 		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
-		mkdirPath = profile.Build.Profiles.Debug.Output
+		mkdirPath := profile.Build.Profiles.Debug.Output
 		return buildArgs, mkdirPath
 	}
 	return nil, ""
