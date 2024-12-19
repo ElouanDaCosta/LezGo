@@ -16,12 +16,14 @@ build:
         GO_ENV: debug
       output: ./bin/debug/
       tags: ["debug"]
+      cross-compilation: [""]
 
     release:
       flags: ["-ldflags", "-s -w"]
       env:
         GO_ENV: production
       output: ./bin/release/
-      tags: ["release"]`
+      tags: ["release"]
+      cross-compilation: [""]`
 	return fmt.Sprintf(configTemplate, name)
 }
