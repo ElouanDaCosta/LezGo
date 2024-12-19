@@ -47,16 +47,16 @@ var buildFunc = func(cmd *Command, args []string) {
 	var mkdirPath string
 	switch profileName {
 	case "release":
-		binaryNameOutput = profile.Profiles.Release.Output + profile.Name
-		buildArgs = profile.Profiles.Release.Flags
+		binaryNameOutput = profile.Build.Profiles.Release.Output + profile.Name
+		buildArgs = profile.Build.Profiles.Release.Flags
 		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
-		mkdirPath = profile.Profiles.Release.Output
+		mkdirPath = profile.Build.Profiles.Release.Output
 		break
 	case "debug":
-		binaryNameOutput = profile.Profiles.Debug.Output + profile.Name
-		buildArgs = profile.Profiles.Debug.Flags
+		binaryNameOutput = profile.Build.Profiles.Debug.Output + profile.Name
+		buildArgs = profile.Build.Profiles.Debug.Flags
 		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
-		mkdirPath = profile.Profiles.Debug.Output
+		mkdirPath = profile.Build.Profiles.Debug.Output
 		break
 	}
 	fmt.Println("Starting the build process...")
