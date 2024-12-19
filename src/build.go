@@ -43,40 +43,27 @@ var buildFunc = func(cmd *Command, args []string) {
 		pkg.CustomError("Please refer the name of an existing profile")
 	}
 
-	var binaryNameOutput string
-
 	var buildArgs []string
 	var mkdirPath string
-	switch profileName {
-	case "release":
-		binaryNameOutput = profile.Build.Profiles.Release.Output + profile.Name
-		buildArgs = profile.Build.Profiles.Release.Flags
-		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
-		mkdirPath = profile.Build.Profiles.Release.Output
-		break
-	case "debug":
-		binaryNameOutput = profile.Build.Profiles.Debug.Output + profile.Name
-		buildArgs = profile.Build.Profiles.Debug.Flags
-		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
-		mkdirPath = profile.Build.Profiles.Debug.Output
-		break
-	}
+
+	profileBuildArgs, profilePath := profileBuild(profile, buildArgs, mkdirPath)
+
 	fmt.Println("Starting the build process...")
 	err = pkg.IsFileExist(profile.Entrypoint)
 	if err != nil {
 		pkg.CustomError("Entrypoint not found")
 	}
 
-	if err := pkg.IsFileExist(mkdirPath); err != nil {
-		mkdirOutput := exec.Command("mkdir", mkdirPath)
+	if err := pkg.IsFileExist(profilePath); err != nil {
+		mkdirOutput := exec.Command("mkdir", profilePath)
 
 		_, err = mkdirOutput.Output()
 		if err != nil {
 			pkg.CustomError(err.Error())
 		}
 	}
-	fmt.Println(buildArgs)
-	goBuild := exec.Command("go", buildArgs...)
+	fmt.Println(profileBuildArgs)
+	goBuild := exec.Command("go", profileBuildArgs...)
 	_, err = goBuild.Output()
 	if err != nil {
 		panic(err)
@@ -90,6 +77,25 @@ func buildArgsArray(array []string, binaryName string, output string) []string {
 	array = append(array, binaryName)
 	array = append(array, output)
 	return array
+}
+
+func profileBuild(profile pkg.Config, buildArgs []string, mkdirPath string) ([]string, string) {
+	var binaryNameOutput string
+	switch profileName {
+	case "release":
+		binaryNameOutput = profile.Build.Profiles.Release.Output + profile.Name
+		buildArgs = profile.Build.Profiles.Release.Flags
+		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
+		mkdirPath = profile.Build.Profiles.Release.Output
+		return buildArgs, mkdirPath
+	case "debug":
+		binaryNameOutput = profile.Build.Profiles.Debug.Output + profile.Name
+		buildArgs = profile.Build.Profiles.Debug.Flags
+		buildArgs = buildArgsArray(buildArgs, binaryNameOutput, profile.Entrypoint)
+		mkdirPath = profile.Build.Profiles.Debug.Output
+		return buildArgs, mkdirPath
+	}
+	return nil, ""
 }
 
 func NewBuildCommand() *Command {
